@@ -1,17 +1,14 @@
 {
-  "name": "minimal-node-webpack-jest",
+  "name": "minimal-yarn-rollup-mocha",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "webpack",
-    "test": "jest"
+    "build": "rollup -c",
+    "test": "mocha"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "webpack": "^5.95.0",
-    "webpack-cli": "^5.1.4"
-  },
-  "jest": {
-    "testEnvironment": "node"
+    "mocha": "^10.7.3",
+    "rollup": "^4.22.4"
   }
 }
