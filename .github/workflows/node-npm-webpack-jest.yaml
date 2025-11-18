@@ -1,0 +1,143 @@
+name: Push to main [rishab-test-node-npm-test]
+run-name: ""
+"on":
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on:
+      - ubuntu-latest
+    steps:
+      - id: harden-runner
+        uses: step-security/harden-runner@v2.12.0
+        with:
+          egress-policy: audit
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: setup-node
+        name: Setup Nodejs
+        uses: actions/setup-node@v6
+        with:
+          architecture: ${{ matrix.node-arch }}
+          cache: npm
+          node-version: ${{ matrix.node-version }}
+      - id: install-dependencies
+        name: Install Dependencies
+        run: npm install
+      - id: node-build
+        name: Build
+        run: npm run build
+      - id: prepare-dist
+        name: copy js
+        run: |2-
+          			mkdir -p dist
+          			artifact="$(ls -1t dist/*.{js,cjs,mjs} 2>/dev/null | head -n1)"
+          			ext="${artifact##*.}"
+          			cp $artifact ./dist/rishab-test-node-test.$ext
+      - id: upload-build
+        name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rishab-test-node-test-${{ needs.initialize.outputs.target_version }}-${{ matrix.node-os }}-${{ matrix.node-arch }}
+          path: dist/*
+    strategy:
+      matrix:
+        node-arch:
+          - amd64
+        node-os:
+          - linux
+        node-version:
+          - "25"
+    needs:
+      - test
+  containerize-rishab-test-node-test-build:
+    runs-on:
+      - ubuntu-latest
+    name: Containerize rishab-test-node-test
+    steps:
+      - id: harden-runner
+        uses: step-security/harden-runner@v2.12.0
+        with:
+          egress-policy: audit
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: download-artifacts
+        name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+          path: dist/
+          pattern: rishab-test-node-test-${{ needs.initialize.outputs.target_version }}-${{ matrix.go-os }}-${{ matrix.go-arch }}
+      - id: generate-dockerfile
+        name: Generate Dockerfile
+        run: |2
+          build_path="$(ls -1t dist/rishab-test-node-test.{js,cjs,mjs} 2>/dev/null | head -n1)"
+          build="$(basename "$build_path")"			
+          cat <<-EOT > ./Dockerfile
+          FROM cgr.dev/chainguard/node
+          WORKDIR /
+          COPY --chown=node:node ["package.json", "package-json.lock", "./dist/$build", "./"]
+          RUN npm install
+          CMD [ "$build" ]
+          EOT
+    strategy:
+      matrix:
+        node-arch:
+          - amd64
+        node-os:
+          - linux
+        node-version:
+          - "25"
+    needs:
+      - build
+    permissions:
+      contents: read
+      id-token: write
+  test:
+    runs-on:
+      - ubuntu-latest
+    steps:
+      - id: harden-runner
+        uses: step-security/harden-runner@v2.12.0
+        with:
+          egress-policy: audit
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - id: setup-node
+        name: Setup Nodejs
+        uses: actions/setup-node@v6
+        with:
+          architecture: ${{ matrix.node-arch }}
+          cache: npm
+          node-version: ${{ matrix.node-version }}
+      - id: install-dependencies
+        name: Install Dependencies
+        run: npm install
+
+      - id: install-jest
+        name: Install jest
+        run: npm install jest
+      - id: node-test
+        name: Run tests
+        run: npm test
+    strategy:
+      matrix:
+        node-version:
+          - "25"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
