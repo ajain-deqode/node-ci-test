@@ -47,10 +47,6 @@ jobs:
           path: dist/*
     strategy:
       matrix:
-        node-arch:
-          - amd64
-        node-os:
-          - linux
         node-version:
           - "25"
     needs:
@@ -91,10 +87,6 @@ jobs:
           EOT
     strategy:
       matrix:
-        node-arch:
-          - amd64
-        node-os:
-          - linux
         node-version:
           - "25"
     needs:
