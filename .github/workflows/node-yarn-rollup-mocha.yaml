@@ -121,7 +121,7 @@ jobs:
 
       - id: install-mocha
         name: Install mocha
-        run: yarn install mocha
+        run: yarn add mocha
       - id: node-test
         name: Run tests
         run: yarn test
