@@ -29,6 +29,11 @@ jobs:
       - id: install-dependencies
         name: Install Dependencies
         run: yarn install
+      - id: vuln-scan
+        name: Perform YARN Audit
+        run: yarn audit --audit-level=moderate
+        env:
+          CI: true
       - id: node-build
         name: Build
         run: yarn run build
