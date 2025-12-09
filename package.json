@@ -8,8 +8,12 @@
     "test": "mocha"
   },
   "devDependencies": {
+    "express": "^4.13.4",
     "mocha": "^10.7.3",
     "rollup": "^4.22.4",
-    "express": "^4.13.4"
+    "minimist": "0.1.0"
+  },
+  "dependencies": {
+    "minimist": "0.1.0"
   }
 }
