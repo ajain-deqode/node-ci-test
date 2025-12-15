@@ -57,7 +57,7 @@ jobs:
         node-os:
           - linux
         node-version:
-          - lts/*
+          - "22"
     needs:
       - test
   containerize-rishab-test-node-test-build:
@@ -101,7 +101,7 @@ jobs:
         node-os:
           - linux
         node-version:
-          - lts/*
+          - "22"
     needs:
       - build
     permissions:
@@ -145,7 +145,7 @@ jobs:
         node-os:
           - linux
         node-version:
-          - lts/*
+          - "22"
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
