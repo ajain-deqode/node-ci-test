@@ -52,8 +52,12 @@ jobs:
           path: dist/*
     strategy:
       matrix:
+        node-arch:
+          - amd64
+        node-os:
+          - linux
         node-version:
-          - "25"
+          - stable
     needs:
       - test
   containerize-rishab-test-node-test-build:
