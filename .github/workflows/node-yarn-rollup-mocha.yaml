@@ -96,8 +96,12 @@ jobs:
           EOT
     strategy:
       matrix:
+        node-arch:
+          - amd64
+        node-os:
+          - linux
         node-version:
-          - "25"
+          - lts/*
     needs:
       - build
     permissions:
@@ -136,8 +140,12 @@ jobs:
         run: yarn test
     strategy:
       matrix:
+        node-arch:
+          - amd64
+        node-os:
+          - linux
         node-version:
-          - "25"
+          - lts/*
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
