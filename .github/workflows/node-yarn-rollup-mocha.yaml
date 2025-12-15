@@ -57,7 +57,7 @@ jobs:
         node-os:
           - linux
         node-version:
-          - stable
+          - lts/*
     needs:
       - test
   containerize-rishab-test-node-test-build:
